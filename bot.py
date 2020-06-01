@@ -7,7 +7,7 @@ import discord
 import os
 from io import BytesIO
 
-img_bytes = BytesIO()
+img_file = None
 
 # make model
 model = keras.Sequential([
@@ -19,11 +19,15 @@ model = keras.Sequential([
 model.load_weights("fountain_on.h5")
 
 def get_prediction():
+    global img_file
     u = urlopen("https://www.washington.edu/cambots/camera1_l.jpg")
     img = Image.open(u)
+    
     img_bytes = BytesIO()
     img.save(img_bytes, "JPEG")
     img_bytes.seek(0)
+    img_file = discord.File(fp=img_bytes,filename="circlepond.jpg")
+    
     img = img.crop((419, 250, 449, 310))
     o = model.predict(np.reshape(img,[1,30,60,3]))
     return o[0][1]
@@ -44,7 +48,7 @@ async def on_message(message):
             title="**I think Drumheller Fountain is {} ({})**".format(prediction, predict_percent),
             color=discord.Colour.from_rgb(51, 0, 111)
         )
-        await message.channel.send(file=discord.File(fp=img_bytes,filename="circlepond.jpg"),embed=e)
+        await message.channel.send(file=img_file,embed=e)
         #await message.channel.send(embed=e)
 
 @client.event
