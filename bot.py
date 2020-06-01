@@ -7,7 +7,7 @@ import discord
 import os
 from io import BytesIO
 
-img_bytes = None
+img_bytes = BytesIO()
 
 # make model
 model = keras.Sequential([
