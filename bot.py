@@ -39,10 +39,11 @@ def get_prediction():
     img = img.crop((419, 250, 449, 310))
     img.save("img/img/img.jpg")
     o = model.predict_generator(flow)
+    print(o)
     return o[0][1]
 
 # bot stuff
-TOKEN = os.environ.get('TOKEN',3)
+TOKEN = os.environ.get('TOKEN')
 client = discord.Client()
 
 @client.event
