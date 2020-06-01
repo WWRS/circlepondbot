@@ -7,7 +7,7 @@ import discord
 import os
 from io import BytesIO
 
-img_bytes = BytesIO()
+img_bytes = None
 
 # make model
 model = keras.Sequential([
@@ -21,6 +21,7 @@ model.load_weights("fountain_on.h5")
 def get_prediction():
     u = urlopen("https://www.washington.edu/cambots/camera1_l.jpg")
     img = Image.open(u)
+    img_bytes = BytesIO()
     img.save(img_bytes, "JPEG")
     img_bytes.seek(0)
     img = img.crop((419, 250, 449, 310))
