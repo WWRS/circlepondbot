@@ -5,10 +5,9 @@ import tensorflow as tf
 from tensorflow import keras
 import discord
 import os
+from io import BytesIO
 
-os.makedirs("img/img", exist_ok=True)
-
-img = None
+img_bytes = BytesIO()
 
 # make model
 model = keras.Sequential([
@@ -17,33 +16,19 @@ model = keras.Sequential([
     keras.layers.Dense(2, activation=tf.nn.softmax)
 ])
 
-model.load_weights('fountain_on.h5')
-
-# generators
-datagen = keras.preprocessing.image.ImageDataGenerator(
-    rescale=1. / 255
-)
-
-flow = datagen.flow_from_directory(
-    'img',
-    target_size=(30,60),
-    shuffle=False,
-    class_mode='sparse',
-    batch_size=1
-)
+model.load_weights("fountain_on.h5")
 
 def get_prediction():
     u = urlopen("https://www.washington.edu/cambots/camera1_l.jpg")
     img = Image.open(u)
-    img.save("img.jpg")
+    img.save(img_bytes, "JPEG")
+    img_bytes.seek(0)
     img = img.crop((419, 250, 449, 310))
-    img.save("img/img/img.jpg")
-    o = model.predict_generator(flow)
-    print(o)
+    o = model.predict(np.reshape(img,[1,30,60,3]))
     return o[0][1]
 
 # bot stuff
-TOKEN = os.environ.get('TOKEN')
+TOKEN = os.environ.get("TOKEN")
 client = discord.Client()
 
 @client.event
@@ -58,7 +43,7 @@ async def on_message(message):
             title="**I think Drumheller Fountain is {} ({})**".format(prediction, predict_percent),
             color=discord.Colour.from_rgb(51, 0, 111)
         )
-        await message.channel.send(file=discord.File("img.jpg"),embed=e)
+        await message.channel.send(file=discord.File(fp=img_bytes,filename="circlepond.jpg"),embed=e)
         #await message.channel.send(embed=e)
 
 @client.event
