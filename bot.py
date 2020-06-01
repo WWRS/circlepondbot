@@ -4,6 +4,9 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 import discord
+import os
+
+os.makedirs("img/img", exist_ok=True)
 
 img = None
 
@@ -39,7 +42,6 @@ def get_prediction():
     return o[0][1]
 
 # bot stuff
-import os
 TOKEN = os.environ.get('TOKEN',3)
 client = discord.Client()
 
