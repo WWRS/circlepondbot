@@ -45,11 +45,10 @@ async def on_message(message):
         prediction = "ON" if predict_prob > 0.5 else "OFF"
         predict_percent = "{0:.2%}".format(predict_prob if predict_prob > 0.5 else 1-predict_prob)
         e = discord.Embed(
-            title="**I think Drumheller Fountain is {} ({})**".format(prediction, predict_percent),
+            title="**I think Drumheller Fountain is {} ({} sure)**".format(prediction, predict_percent),
             color=discord.Colour.from_rgb(51, 0, 111)
         )
         await message.channel.send(file=img_file,embed=e)
-        #await message.channel.send(embed=e)
 
 @client.event
 async def on_ready():
