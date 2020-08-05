@@ -28,8 +28,8 @@ def get_prediction():
     img_bytes.seek(0)
     img_file = discord.File(fp=img_bytes,filename="circlepond.jpg")
     
-    img = img.crop((419, 250, 449, 310))
-    o = model.predict(np.reshape(img,[1,30,60,3]))
+    img = img.crop((421, 249, 451, 309))
+    o = model.predict(np.multiply(np.reshape(img,[1,30,60,3]), 1. / 255))
     return o[0][1]
 
 # bot stuff
