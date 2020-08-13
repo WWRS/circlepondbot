@@ -11,12 +11,13 @@ img_file = None
 
 # make model
 model = keras.Sequential([
-    keras.layers.Flatten(input_shape=(30, 60, 3)),
-    keras.layers.Dense(128, activation=tf.nn.relu),
-    keras.layers.Dense(2, activation=tf.nn.softmax)
+    keras.layers.Flatten(input_shape=(60, 30, 3)),
+    keras.layers.Dense(2700, activation=tf.nn.relu),
+    keras.layers.Dense(1, activation=tf.nn.sigmoid)
 ])
 
 model.load_weights("fountain_on.h5")
+#print(keras.backend.image_data_format())
 
 def get_prediction():
     global img_file
@@ -29,11 +30,11 @@ def get_prediction():
     img_file = discord.File(fp=img_bytes,filename="circlepond.jpg")
     
     img = img.crop((421, 249, 451, 309))
-    img_arr = np.transpose(img, (1,0,2))
-    img_arr = np.reshape(img_arr, (1,30,60,3))
+    img_arr = np.reshape(img, (1,60,30,3))
     img_arr = np.multiply(img_arr, 1. / 255)
     o = model.predict(img_arr)
-    return o[0][1]
+    #print(o)
+    return o[0][0]
 
 # bot stuff
 TOKEN = os.environ.get("TOKEN")
