@@ -1,5 +1,5 @@
 pillow==8.1.2
 numpy==1.19.5
 h5py==2.10.0
-tensorflow==1.15.4
+tensorflow==2.5.1
 discord.py==1.6.0
