@@ -41,7 +41,7 @@ def get_prediction():
 # bot stuff
 TOKEN = os.environ.get("TOKEN")
 bot = discord.Client(intents=discord.Intents.default())
-slash = SlashCommand(bot)
+slash = SlashCommand(bot, sync_commands=True)
 
 def get_embed():
     predict_prob = get_prediction()
