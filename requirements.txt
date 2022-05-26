@@ -1,6 +1,6 @@
 pillow==9.0.0
 numpy==1.22.2
 h5py==3.1.0
-tensorflow-cpu==2.6.1
+tensorflow-cpu==2.7.2
 discord.py==1.7.3
 discord-py-slash-command==3.0.1
