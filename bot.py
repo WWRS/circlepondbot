@@ -7,7 +7,7 @@ import numpy as np
 
 import os
 import discord
-from discord_slash import SlashCommand
+import discord.ext
 
 img_file = None
 
@@ -41,7 +41,7 @@ def get_prediction():
 # bot stuff
 TOKEN = os.environ.get("TOKEN")
 bot = discord.Client(intents=discord.Intents.default())
-slash = SlashCommand(bot, sync_commands=True)
+tree = discord.app_commands.CommandTree(bot)
 
 def get_embed():
     predict_prob = get_prediction()
@@ -55,15 +55,16 @@ def get_embed():
 
 @bot.event
 async def on_ready():
+    await tree.sync()
     activity = discord.Activity(name='/circlepond', type=discord.ActivityType.watching)
     await bot.change_presence(activity=activity)
     print("Running :)")
 
-@slash.slash(
+@tree.command(
     name="circlepond",
     description="Figure out if Drumheller Fountain is on")
 async def circlepond(ctx):
     e = get_embed()
-    await ctx.send(file=img_file, embed=e)
+    await ctx.response.send_message(file=img_file, embed=e)
 
 bot.run(TOKEN)
