@@ -1,8 +1,7 @@
 import urllib.request
 from PIL import Image
 from io import BytesIO
-import tensorflow as tf
-from tensorflow import keras
+import tflite_runtime.interpreter as tflite
 import numpy as np
 
 import os
@@ -12,14 +11,8 @@ import discord.ext
 img_file = None
 
 # make model
-model = keras.Sequential([
-    keras.layers.Flatten(input_shape=(60, 30, 3)),
-    keras.layers.Dense(2700, activation=tf.nn.relu),
-    keras.layers.Dense(1, activation=tf.nn.sigmoid)
-])
-
-model.load_weights("fountain_on.h5")
-#print(keras.backend.image_data_format())
+interpreter = tflite.Interpreter(model_path='circlepond.tflite')
+signature = interpreter.get_signature_runner()
 
 def get_prediction():
     global img_file
@@ -34,9 +27,9 @@ def get_prediction():
     img = img.crop((421, 249, 451, 309))
     img_arr = np.reshape(img, (1, 60, 30, 3))
     img_arr = np.multiply(img_arr, 1. / 255)
-    o = model.predict(img_arr)
+    o = signature(flatten_input=img_arr.astype(np.float32))
     #print(o)
-    return o[0][0]
+    return o['dense_1'][0][0]
 
 # bot stuff
 TOKEN = os.environ.get("TOKEN")
@@ -55,16 +48,13 @@ def get_embed():
 
 @bot.event
 async def on_ready():
-    await tree.sync()
     activity = discord.Activity(name='/circlepond', type=discord.ActivityType.watching)
     await bot.change_presence(activity=activity)
     print("Running :)")
 
-@tree.command(
-    name="circlepond",
-    description="Figure out if Drumheller Fountain is on")
-async def circlepond(ctx):
+@tree.command(description="Figure out if Drumheller Fountain is on")
+async def circlepond(interaction):
     e = get_embed()
-    await ctx.response.send_message(file=img_file, embed=e)
+    await interaction.response.send_message(file=img_file, embed=e)
 
 bot.run(TOKEN)
